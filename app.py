@@ -35,9 +35,11 @@ def fetch_pokemon(name="charizard"):
     Returns (None, None, None, None) if the Pokémon name is not found.
     """
     url = f"https://pokeapi.co/api/v2/pokemon/{name}"
-    response = requests.get(url)
-
-    if response.status_code != 200:
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+    except requests.RequestException:
+        # Network error, timeout, or non-2xx response — treat as "not found" for UI
         return None, None, None, None
 
     data = response.json()
